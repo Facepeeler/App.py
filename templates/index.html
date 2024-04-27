@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple form</title>
+    <style>
+        .coord-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <label for="link">Enter link:</label>
+    <input type="text" id="link" placeholder="Enter link">
+    <button onclick="processInput()">convert</button>
+    <br>
+    <p class="coord-label">USC2000:</p>
+    <p id="usk2000"></p>
+
+    <script>
+        function processInput() {
+
+            document.getElementById('usk2000').textContent = "X: Y:"
+
+            var userInput = document.getElementById('link').value;
+            var urlPattern = /^(http(s)?:\/\/)?(www\.)?[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?(\.[a-zA-Z]{2,})?/;
+
+            if (urlPattern.test(userInput)) {
+                extract_coordinates_from_link(userInput);
+            }       
+        }
+
+        function extract_coordinates_from_link(link) {
+
+            var endpointUrl = '/extract_coordinates?link=' + link
+            
+            fetch(endpointUrl)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.error){
+                        document.getElementById('usk2000').textContent = data.error;
+                        return;
+                    }
+                    
+                    var usk2000Coords = 'X: ' + data.converted_x + ', Y: ' + data.converted_y;
+                    document.getElementById('usk2000').textContent = usk2000Coords;
+                })
+                .catch(error => {
+                    console.error('Помилка отримання результатів:', error)
+                    document.getElementById('usk2000').textContent = "X: Y:"
+                });
+        }
+    </script>
+</body>
+</html>

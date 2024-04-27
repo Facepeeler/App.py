@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps Example</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<API_KEY>"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .coord-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <label for="address">Enter address:</label>
+    <input type="text" id="address" placeholder="Enter address">
+    <br>
+    <p class="coord-label">Latitude:</p>
+    <p id="latitude"></p>
+    <p class="coord-label">Longitude:</p>
+    <p id="longitude"></p>
+    <p class="coord-label">USC2000:</p>
+    <p id="usk2000"></p>
+
+    <script>
+        var map;
+        var marker;
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: 49.0275, lng: 31.4828},
+                zoom: 6
+            });
+
+            marker = new google.maps.Marker({
+                map: map,
+                draggable: true
+            });
+
+            google.maps.event.addListener(marker, 'dragend', function(event) {
+                updateCoordinates(event.latLng.lat(), event.latLng.lng());
+            });
+
+            document.getElementById('address').addEventListener('change', function() {
+                var geocoder = new google.maps.Geocoder();
+                var address = document.getElementById('address').value;
+
+                geocoder.geocode({'address': address}, function(results, status) {
+                    if (status === 'OK') {
+                        var location = results[0].geometry.location;
+                        updateCoordinates(location.lat(), location.lng());
+                        map.setCenter(location);
+                        marker.setPosition(location);
+                    } else {
+                        alert('Geocode was not successful for the following reason: ' + status);
+                    }
+                });
+            });
+
+            google.maps.event.addListener(map, 'click', function(event) {
+                marker.setPosition(event.latLng);
+                updateCoordinates(event.latLng.lat(), event.latLng.lng());
+            });
+        }
+
+        function updateCoordinates(latitude, longitude) {
+            document.getElementById('latitude').textContent = latitude.toFixed(6);
+            document.getElementById('longitude').textContent = longitude.toFixed(6);
+            convertToUSK2000(latitude, longitude);
+        }
+
+        function convertToUSK2000(lat, lng) {
+    var endpointUrl = '/convert_coordinates?latitude=' + lat + '&longitude=' + lng;
+    
+    fetch(endpointUrl)
+        .then(response => response.json())
+        .then(data => {
+            if(data.error){
+                        document.getElementById('usk2000').textContent = data.error;
+                        return;
+                    }
+            var usk2000Coords = 'X: ' + data.converted_x + ', Y: ' + data.converted_y;
+            document.getElementById('usk2000').textContent = usk2000Coords;
+        })
+        .catch(error => {
+            console.error('Помилка отримання результатів:', error)
+            document.getElementById('usk2000').textContent = "X: Y:"
+        });
+}
+    </script>
+
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=<API_KEY>">
+    </script>
+</body>
+</html>
