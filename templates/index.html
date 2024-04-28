@@ -17,6 +17,7 @@
     <br>
     <p class="coord-label">USC2000:</p>
     <p id="usk2000"></p>
+    <button id="copyButton">Copy Coordinates</button>
 
     <script>
         function processInput() {
@@ -51,6 +52,19 @@
                     document.getElementById('usk2000').textContent = "X: Y:"
                 });
         }
+        
+        document.getElementById('copyButton').addEventListener('click', function() {
+            var coordinates = document.getElementById('usk2000').innerText;
+            navigator.clipboard.writeText(coordinates)
+                .then(function() {
+                    console.log('Coordinates copied to clipboard');
+                    alert('Coordinates copied to clipboard: ' + coordinates);
+                })
+                .catch(function(err) {
+                    console.error('Failed to copy: ', err);
+                    alert('Failed to copy coordinates');
+                });
+        });
     </script>
 </body>
 </html>
