@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Maps Example</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key=<API_KEY>"></script>
     <style>
         #map {
             height: 400px;
@@ -95,8 +94,9 @@
 }
     </script>
 
-    <script async defer
-        src="https://maps.googleapis.com/maps/api/js?key=<API_KEY>">
+   
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=<API_KEY>&loading=async&callback=initMap">
     </script>
 </body>
 </html>
